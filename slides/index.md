@@ -1,255 +1,207 @@
-- title : React Native with F#
-- description : Introduction to React Native with F#
-- author : Steffen Forkmann
+- title : Orleankka F# intro
+- description : Intro to statefull distributed systems via Orleankka/Orleans
+- author : Alexander Prooks
 - theme : night
 - transition : default
 
 ***
 
-## React Native with F#
+## Orleankka F#
 
 <br />
 <br />
 
-### Modern mobile app development
+### Statefull distributed architecture
 
 <br />
 <br />
-Steffen Forkmann - [@sforkmann](http://www.twitter.com/sforkmann)
+Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 
 ***
 
-### Modern mobile app development?
+## Stateless request handling
 
-* UI/UX
-    * "Native mobile apps"
-    * Performance
-* Tooling
-    * Hot loading
-    * IntelliSense
-* Maintainability
-    * Easy to debug
-    * Correctness
+    //Infrastructure: Cache, RequestValidation
+    let Put (request:SetNewPassword) =
+        
+        let user  = Users.Load request.Id
+        user.Password = request.NewPassword;
+        Users.Save user
 
 ---
 
-### "Native" UI
+## Real life
 
- <img src="images/meter.png" style="background: transparent; border-style: none;"  width=300 />
+    let Put req = 
 
----
+        let a = A.Load req.SomeId
+        let b = B.Load req.AnotherId
+        let c = C.Load req.Id
 
-### Tooling
-
-<img src="images/hotloading.gif" style="background: transparent; border-style: none;"  />
-
-*** 
-
-### Model - View - Update
-
-#### "Elm - Architecture"
-
- <img src="images/Elm.png" style="background: white;" width=700 />
-
-
- <small>http://danielbachler.de/2016/02/11/berlinjs-talk-about-elm.html</small>
-
-
---- 
-
-### Model - View - Update
-
-    // MODEL
-
-    type Model = int
-
-    type Msg =
-    | Increment
-    | Decrement
-
-    let init() : Model = 0
+        if a.Data > b.Data && c.List.Contains 42 then
+            failwith "Q?"
+        else
+            D.save 42
 
 ---
 
-### Model - View - Update
+### Pros
 
-    // VIEW
+<br/>
 
-    let view model dispatch =
-        div []
-            [ button [ OnClick (fun _ -> dispatch Decrement) ] [ str "-" ]
-              div [] [ str (model.ToString()) ]
-              button [ OnClick (fun _ -> dispatch Increment) ] [ str "+" ] ]
+* Easy
+* Scalable application servers
 
----
+<br/>
+<br/>
 
-### Model - View - Update
+### Cons
+<br/>
 
-    // UPDATE
-
-    let update (msg:Msg) (model:Model) =
-        match msg with
-        | Increment -> model + 1
-        | Decrement -> model - 1
+* State = database
+* Scale via Queues, BUSes etc.
+* Cache invalidation
+* External scheduling:
+    * lock user if was not active for 24 hours?
 
 ---
 
-### Model - View - Update
+### Objects in memory?
 
-    // wiring things up
+* Concurrency (locks, mutexes etc.)
+* Object location
+* System Resilience
+* Memory management
 
-    Program.mkSimple init update view
-    |> Program.withConsoleTrace
-    |> Program.withReact "elmish-app"
-    |> Program.run
-
----
-
-### Model - View - Update
-
-# Demo
+=> Just don't! :trollface:
 
 ***
 
-### Sub-Components
+# Actor model
 
-    // MODEL
+* Function or object
+* Isolated state
+* Syncronous execution
+* Messages (requests) are queued
 
-    type Model = {
-        Counters : Counter.Model list
+---
+
+<img src="images/actors.svg" style="background: transparent; border-style: none;"  />
+
+---
+
+## Implementations
+
+* Erlang ( Since 1986! )
+* Akka: Jvm and .Net
+* Orleans: .Net and Orbit Jvm
+* ProtoActors: Go, .Net (cross platform)
+
+---
+
+## Orleans vs others
+
+* Virtual actors = grains
+* Infrastructure manages lifecycle
+* In-built cluster 
+* Automatic actors distribution
+* At-least-once delivery by default
+* Caller awaits remote execution
+<br />
+<br />
+<br />
+### Simplicity => Profit!
+
+---
+
+## Orleans
+
+    [lang=c#]
+    public interface IPinger{
+        Task<Pong> Ping();
     }
 
-    type Msg = 
-    | Insert
-    | Remove
-    | Modify of int * Counter.Msg
-
-    let init() : Model =
-        { Counters = [] }
+    public class Pinger: Grain, IPinger
+    {
+        public Task<Pong> Ping(){
+            return Task.FromResult("Pong");
+        }
+    }
 
 ---
 
-### Sub-Components
+## Orleankka aka functional Orleans
 
-    // VIEW
+    [lang=c#]
+    [Serializable]
+    public class Ping : ActorMessage<Pinger>
+    {        
+    }
 
-    let view model dispatch =
-        let counterDispatch i msg = dispatch (Modify (i, msg))
+    public class Pinger: Actor{
+        public Task<string> Handle(Ping request){
+            return Task.FromResult("Pong");
+        }
+    }
 
-        let counters =
-            model.Counters
-            |> List.mapi (fun i c -> Counter.view c (counterDispatch i)) 
+---
+
+## Calling another actor
+
+    [lang=c#]
+    var pinger = System.ActorOf<Pinger>("someId");
+    await pinger.Tell(new Ping());
+
+***
+
+### Orleankka F#
+
+    module Pingers =
+        type Message = 
+        | Ping
         
-        div [] [ 
-            yield button [ OnClick (fun _ -> dispatch Remove) ] [  str "Remove" ]
-            yield button [ OnClick (fun _ -> dispatch Insert) ] [ str "Add" ] 
-            yield! counters ]
+        type Pinger() = 
+            inherit Actor<Message>()
 
+            override this.Receive msg = task{
+                match msg with
+                | Ping -> return "Pong"
+            }
 ---
 
-### Sub-Components
+### Client
 
-    // UPDATE
+    let system = [|Assembly.GetExecutingAssembly()|]
+                 |> ActorSystem.createPlayground
+                 |> ActorSystem.start   
 
-    let update (msg:Msg) (model:Model) =
-        match msg with
-        | Insert ->
-            { Counters = Counter.init() :: model.Counters }
-        | Remove ->
-            { Counters = 
-                match model.Counters with
-                | [] -> []
-                | x :: rest -> rest }
-        | Modify (id, counterMsg) ->
-            { Counters =
-                model.Counters
-                |> List.mapi (fun i counterModel -> 
-                    if i = id then
-                        Counter.update counterMsg counterModel
-                    else
-                        counterModel) }
-
----
-
-### Sub-Components
-
-# Demo
+    task {
+        let pinger =  ActorSystem.actorOf<Pinger>(system,"myId")
+        let! res = pinger <? Pong
+        printfn "%s" res //Pong
+    } 
+    |> Task.run 
+    |> ignore
 
 ***
 
-### React
-
-* Facebook library for UI 
-* <code>state => view</code>
-* Virtual DOM
-
----
-
-### Virtual DOM - Initial
-
-<br />
-<br />
-
-
- <img src="images/onchange_vdom_initial.svg" style="background: white;" />
-
-<br />
-<br />
-
- <small>http://teropa.info/blog/2015/03/02/change-and-its-detection-in-javascript-frameworks.html</small>
-
----
-
-### Virtual DOM - Change
-
-<br />
-<br />
-
-
- <img src="images/onchange_vdom_change.svg" style="background: white;" />
-
-<br />
-<br />
-
- <small>http://teropa.info/blog/2015/03/02/change-and-its-detection-in-javascript-frameworks.html</small>
-
----
-
-### Virtual DOM - Reuse
-
-<br />
-<br />
-
-
- <img src="images/onchange_immutable.svg" style="background: white;" />
-
-<br />
-<br />
-
- <small>http://teropa.info/blog/2015/03/02/change-and-its-detection-in-javascript-frameworks.html</small>
-
-
-*** 
-
-### ReactNative
-
- <img src="images/ReactNative.png" style="background: white;" />
-
-
- <small>http://timbuckley.github.io/react-native-presentation</small>
+# DEMO
 
 ***
 
-### Show me the code
+---
 
-*** 
+## Grain core components
 
-### TakeAways
+* OnActivate => loads state
+* OnReceive  => Handle
+* Reminders   => Persistent scheduling
+* Timers     => Non-persisten scheduling
+* Streams    => Pub/Sub
+* Reentrancy => Concurrent execution (Queries!)
+* Workers    => Stateless parallelism 
 
-* Learn all the FP you can!
-* Simple modular design
-
-*** 
+***
 
 ### Thank you!
 
