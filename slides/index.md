@@ -165,7 +165,7 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 
             override this.Receive msg = task{
                 match msg with
-                | Ping -> return "Pong"
+                | Ping -> return response("Pong")
             }
 ---
 
@@ -175,12 +175,13 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
                  |> ActorSystem.createPlayground
                  |> ActorSystem.start   
 
-    task {
+    let job() = task {
         let pinger =  ActorSystem.actorOf<Pinger>(system,"myId")
-        let! res = pinger <? Pong
+        let! res = pinger <? Ping
         printfn "%s" res //Pong
     } 
-    |> Task.run 
+
+    Task.run (job)
     |> ignore
 
 ***
@@ -195,7 +196,7 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 
 * OnActivate => loads state
 * OnReceive  => Handle
-* Reminders   => Persistent scheduling
+* Reminders  => Persistent scheduling
 * Timers     => Non-persisten scheduling
 * Streams    => Pub/Sub
 * Reentrancy => Concurrent execution (Queries!)
@@ -203,8 +204,12 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 
 ***
 
-### Thank you!
+# Marketing
 
-* https://github.com/fable-compiler/fable-elmish
-* https://ionide.io
-* https://facebook.github.io/react-native/
+* Halo with 14 ml users
+* EA implemented Orbit in JVM
+* 95% CPU utilisation
+
+***
+
+### Thank you!
