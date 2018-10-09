@@ -155,27 +155,34 @@ game.invoke(“foo()”)
 
 ***
 
-### Orleankka F#
+### Orleans + F# = 
 
     module Pingers =
         type Message = 
-        | Ping
+        | Ping of string
         
-        type Pinger() = 
-            inherit Actor<Message>()
+        type IPinger = 
+            inherit IActorGrain<Message>
 
-            override this.Receive msg = task {
-                match msg with
-                | Ping -> return response("Pong")
+        type Pinger() = 
+            inherit Actor()
+
+            interface IPinger 
+            override this.Receive message = task {
+                match message with
+                | :? Message msg -> 
+                    match msg with
+                    | Ping name-> 
+                        return some("Hello " + name)
             }
 ---
 
-### Client
+### Calling grains
 
     let job() = task {
         let pinger =  ActorSystem.actorOf<Pinger>(actorSystem,"myId")
-        let! res = pinger <? Ping
-        printfn "%s" res //Pong
+        let! res = pinger <? Ping ("Alex")
+        printfn "%s" res // Hello Alex
     } 
 
     Task.run (job)
