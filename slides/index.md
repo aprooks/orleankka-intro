@@ -6,12 +6,12 @@
 
 ***
 
-## Orleankka F#
+## Orleankka + F#
 
 <br />
 <br />
 
-### Statefull distributed architecture
+### Statefull distributed architecture via MSFT Orleans
 
 <br />
 <br />
@@ -19,29 +19,9 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 
 ***
 
-## Stateless request handling
+## Stateless
 
-    //Infrastructure: Cache, RequestValidation
-    let Put (request:SetNewPassword) =
-        
-        let user  = Users.Load request.Id
-        user.Password = request.NewPassword;
-        Users.Save user
-
----
-
-## Real life
-
-    let Put req = 
-
-        let a = A.Load req.SomeId
-        let b = B.Load req.AnotherId
-        let c = C.Load req.Id
-
-        if a.Data > b.Data && c.List.Contains 42 then
-            failwith "Q?"
-        else
-            D.save 42
+<img src="images/stateless.png" style="background: transparent; border-style: none; height: 500px"  />
 
 ---
 
@@ -49,8 +29,8 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 
 <br/>
 
-* Easy
-* Scalable application servers
+* Easy?
+* Scalable? application servers
 
 <br/>
 <br/>
@@ -73,7 +53,7 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 * System Resilience
 * Memory management
 
-=> Just don't! :trollface:
+=> Just don't! 
 
 ***
 
@@ -99,6 +79,24 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 
 ---
 
+### Akka/Erlang
+``` C#
+var game = activate(“game-1”, “tcp://10.0.0.1/”)
+game.invoke(“foo()”) 
+```
+
+### Orleans
+
+``` C#
+var game = getGrain(“game-1”)
+game.invoke(“foo()”) 
+```
+---
+
+<img src="images/runtime.png" style="background: transparent; border-style: none;"  />
+
+
+---
 ## Orleans vs others
 
 * Virtual actors = grains
@@ -107,14 +105,17 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 * Automatic actors distribution
 * At-least-once delivery by default
 * Caller awaits remote execution
+* Garbase collection
+
 <br />
 <br />
 <br />
+
 ### Simplicity => Profit!
 
----
+***
 
-## Orleans
+## Programming model
 
     [lang=c#]
     public interface IPinger{
@@ -130,7 +131,7 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 
 ---
 
-## Orleankka aka functional Orleans
+## Orleankka function interface
 
     [lang=c#]
     [Serializable]
@@ -163,7 +164,7 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
         type Pinger() = 
             inherit Actor<Message>()
 
-            override this.Receive msg = task{
+            override this.Receive msg = task {
                 match msg with
                 | Ping -> return response("Pong")
             }
@@ -171,12 +172,8 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 
 ### Client
 
-    let system = [|Assembly.GetExecutingAssembly()|]
-                 |> ActorSystem.createPlayground
-                 |> ActorSystem.start   
-
     let job() = task {
-        let pinger =  ActorSystem.actorOf<Pinger>(system,"myId")
+        let pinger =  ActorSystem.actorOf<Pinger>(actorSystem,"myId")
         let! res = pinger <? Ping
         printfn "%s" res //Pong
     } 
@@ -186,17 +183,11 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 
 ***
 
-# DEMO
-
-***
-
----
-
 ## Grain core components
 
-* OnActivate => loads state
-* OnReceive  => Handle
-* Reminders  => Persistent scheduling
+* OnReceive  => Handle all
+* Activate   => load  state
+* Reminder   => Persistent scheduling
 * Timers     => Non-persisten scheduling
 * Streams    => Pub/Sub
 * Reentrancy => Concurrent execution (Queries!)
@@ -204,11 +195,20 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 
 ***
 
+# DEMO
+
+
+***
+
 # Marketing
 
-* Halo with 14 ml users
+* Halo with 14 ml users <br>
+    * "25 servers with 90% utilization without any instability"
+    * linear scaleability
+
+    https://www.infoq.com/presentations/halo-4-orleans
+
 * EA implemented Orbit in JVM
-* 95% CPU utilisation
 
 ***
 
