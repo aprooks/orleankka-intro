@@ -79,12 +79,12 @@ Alexander Prooks - <a href="http://www.twitter.com/aprooks">@aprooks</a></p>
 <br/>
 <ul>
 <li>State = database</li>
-<li>Scale via Queues, BUSes etc.</li>
+<li>Complixity via Queues, BUSes etc. =&gt; latency</li>
 <li>Cache invalidation</li>
 <li>
 External scheduling:
 <ul>
-<li>lock user if was not active for 24 hours?</li>
+<li>lock user if it was not activated for 24 hours?</li>
 </ul>
 </li>
 </ul>
@@ -97,7 +97,7 @@ External scheduling:
 <li>System Resilience</li>
 <li>Memory management</li>
 </ul>
-<p>=&gt; Just don't!</p>
+<p>=&gt; Don't do it!</p>
 </section>
 </section>
 <section >
@@ -134,7 +134,7 @@ game.invoke(“foo()”)
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip"><code lang="C#">var game = getGrain(“game-1”)
+<td class="snippet"><pre class="fssnip"><code lang="C#">var game = getGrainReference(“game-1”)
 game.invoke(“foo()”) 
 </code></pre></td></tr></table>
 </section>
@@ -145,16 +145,21 @@ game.invoke(“foo()”)
 <h2>Orleans vs others</h2>
 <ul>
 <li>Virtual actors = grains</li>
-<li>Infrastructure manages lifecycle</li>
-<li>In-built cluster</li>
-<li>Automatic actors distribution</li>
 <li>At-least-once delivery by default</li>
 <li>Caller awaits remote execution</li>
-<li>Garbase collection</li>
+<li>
+<p>Runtime manages pain points:</p>
+<ul>
+<li>Clustering and availability</li>
+<li>Grain distribution</li>
+<li>
+<p>GC inactive grains
+<br />
+<br /></p>
+</li>
 </ul>
-<br />
-<br />
-<br />
+</li>
+</ul>
 <h3>Simplicity =&gt; Profit!</h3>
 </section>
 </section>
@@ -288,16 +293,25 @@ await pinger.Tell(new Ping());
 </section>
 </section>
 <section >
-<h2>Grain core components</h2>
-<ul>
-<li>OnReceive  =&gt; Handle all</li>
-<li>Activate   =&gt; load  state</li>
-<li>Reminder   =&gt; Persistent scheduling</li>
-<li>Timers     =&gt; Non-persisten scheduling</li>
-<li>Streams    =&gt; Pub/Sub</li>
-<li>Reentrancy =&gt; Concurrent execution (Queries!)</li>
-<li>Workers    =&gt; Stateless parallelism</li>
-</ul>
+<h2>Core components</h2>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="i">OnReceive</span>  <span class="k">-&gt;</span>    <span class="i">Handle</span> <span class="i">all</span>
+<span class="i">Activate</span>   <span class="k">-&gt;</span>    <span class="i">load</span>  <span class="i">state</span>
+<span class="i">Reminder</span>   <span class="k">-&gt;</span>    <span class="i">Persistent</span> <span class="i">scheduling</span>
+<span class="i">Timers</span>     <span class="k">-&gt;</span>    <span class="i">Recurring</span> <span class="i">operations</span> 
+<span class="i">Streams</span>    <span class="k">-&gt;</span>    <span class="i">Pub</span><span class="o">/</span><span class="i">Sub</span>
+<span class="i">Reentrancy</span> <span class="k">-&gt;</span>    <span class="i">Concurrent</span> <span class="i">execution</span> (<span class="i">Queries!</span>)
+<span class="i">Workers</span>    <span class="k">-&gt;</span>    <span class="i">Stateless</span> <span class="i">parallelism</span> 
+</code></pre></td>
+</tr>
+</table>
 </section>
 <section >
 <h1>DEMO</h1>
@@ -316,6 +330,29 @@ await pinger.Tell(new Ping());
 </ul>
 </li>
 <li>EA implemented Orbit in JVM</li>
+<li>
+<p>Stuff I did:</p>
+<ul>
+<li>License and usage tracking + finance</li>
+<li>Property management system</li>
+<li>
+<p>Utility services
+<em></em>*</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Weapping up</h3>
+<ul>
+<li>F# is awesome DDD oriented language</li>
+<li>Orleans is awesome platform</li>
+<li>
+<p>F# + Orleannkka =&gt;</p>
+<ul>
+<li>safety</li>
+<li>development speed</li>
+</ul>
+</li>
 </ul>
 </section>
 <section >
