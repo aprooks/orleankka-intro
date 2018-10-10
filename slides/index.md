@@ -6,7 +6,7 @@
 
 ***
 
-## Orleankka + F#
+## Orleankka + F# 
 
 <br />
 <br />
@@ -36,13 +36,14 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 <br/>
 
 ### Cons
+
 <br/>
 
 * State = database
-* Scale via Queues, BUSes etc.
+* Complixity via Queues, BUSes etc. => latency
 * Cache invalidation
 * External scheduling:
-    * lock user if was not active for 24 hours?
+    * lock user if it was not activated for 24 hours?
 
 ---
 
@@ -53,7 +54,7 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 * System Resilience
 * Memory management
 
-=> Just don't! 
+=> Don't do it! 
 
 ***
 
@@ -80,6 +81,7 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 ---
 
 ### Akka/Erlang
+
 ``` C#
 var game = activate(“game-1”, “tcp://10.0.0.1/”)
 game.invoke(“foo()”) 
@@ -88,7 +90,7 @@ game.invoke(“foo()”)
 ### Orleans
 
 ``` C#
-var game = getGrain(“game-1”)
+var game = getGrainReference(“game-1”)
 game.invoke(“foo()”) 
 ```
 ---
@@ -100,14 +102,14 @@ game.invoke(“foo()”)
 ## Orleans vs others
 
 * Virtual actors = grains
-* Infrastructure manages lifecycle
-* In-built cluster 
-* Automatic actors distribution
 * At-least-once delivery by default
 * Caller awaits remote execution
-* Garbase collection
 
-<br />
+* Runtime manages pain points:
+
+    * Clustering and availability
+    * Grain distribution
+    * GC inactive grains
 <br />
 <br />
 
@@ -190,15 +192,17 @@ game.invoke(“foo()”)
 
 ***
 
-## Grain core components
+## Core components
 
-* OnReceive  => Handle all
-* Activate   => load  state
-* Reminder   => Persistent scheduling
-* Timers     => Non-persisten scheduling
-* Streams    => Pub/Sub
-* Reentrancy => Concurrent execution (Queries!)
-* Workers    => Stateless parallelism 
+```
+OnReceive  ->    Handle all
+Activate   ->    load  state
+Reminder   ->    Persistent scheduling
+Timers     ->    Recurring operations 
+Streams    ->    Pub/Sub
+Reentrancy ->    Concurrent execution (Queries!)
+Workers    ->    Stateless parallelism 
+```
 
 ***
 
@@ -216,6 +220,21 @@ game.invoke(“foo()”)
     https://www.infoq.com/presentations/halo-4-orleans
 
 * EA implemented Orbit in JVM
+
+* Stuff I did:
+    * License and usage tracking + finance
+    * Property management system
+    * Utility services
+***
+
+### Weapping up
+
+* F# is awesome DDD oriented language
+* Orleans is awesome platform
+
+* F# + Orleannkka =>
+    * safety 
+    * development speed
 
 ***
 
