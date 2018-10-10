@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Orleankka F# intro</title>
-    <meta name="description" content="Intro to statefull distributed systems via Orleankka/Orleans">
+    <meta name="description" content="Intro to stateful distributed systems via Orleankka/Orleans">
     <meta name="author" content="Alexander Prooks">
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -152,8 +152,9 @@ game.invoke(“foo()”)
 <ul>
 <li>Clustering and availability</li>
 <li>Grain distribution</li>
+<li>GC inactive grains</li>
 <li>
-<p>GC inactive grains
+<p>Distributed transactions (Beta)
 <br />
 <br /></p>
 </li>
@@ -324,7 +325,7 @@ await pinger.Tell(new Ping());
 <ul>
 <li>"25 servers with 90% utilization without any instability"</li>
 <li>
-<p>linear scaleability</p>
+<p>linear scalability</p>
 <p><a href="https://www.infoq.com/presentations/halo-4-orleans">https://www.infoq.com/presentations/halo-4-orleans</a></p>
 </li>
 </ul>
@@ -342,7 +343,7 @@ await pinger.Tell(new Ping());
 </ul>
 </li>
 </ul>
-<h3>Weapping up</h3>
+<h3>Wrapping up</h3>
 <ul>
 <li>F# is awesome DDD oriented language</li>
 <li>Orleans is awesome platform</li>
