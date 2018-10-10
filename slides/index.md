@@ -1,5 +1,5 @@
 - title : Orleankka F# intro
-- description : Intro to statefull distributed systems via Orleankka/Orleans
+- description : Intro to stateful distributed systems via Orleankka/Orleans
 - author : Alexander Prooks
 - theme : night
 - transition : default
@@ -216,7 +216,7 @@ Workers    ->    Stateless parallelism
 
 * Halo with 14 ml users <br>
     * "25 servers with 90% utilization without any instability"
-    * linear scaleability
+    * linear scalability
 
     https://www.infoq.com/presentations/halo-4-orleans
 
@@ -228,7 +228,7 @@ Workers    ->    Stateless parallelism
     * Utility services
 ***
 
-### Weapping up
+### Wrapping up
 
 * F# is awesome DDD oriented language
 * Orleans is awesome platform
