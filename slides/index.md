@@ -11,7 +11,7 @@
 <br />
 <br />
 
-### Statefull distributed architecture via MSFT Orleans
+### Stateful distributed architecture via MSFT Orleans
 
 <br />
 <br />
@@ -63,7 +63,7 @@ Alexander Prooks - [@aprooks](http://www.twitter.com/aprooks)
 * Function or object
 * Isolated state
 * Syncronous execution
-* Messages (requests) are queued
+* Messages (requests) are queued in-memory
 
 ---
 
