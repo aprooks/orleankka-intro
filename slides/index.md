@@ -110,6 +110,7 @@ game.invoke(“foo()”)
     * Clustering and availability
     * Grain distribution
     * GC inactive grains
+    * Distributed transactions (Beta)
 <br />
 <br />
 
